@@ -25,6 +25,7 @@ textarea {
   width: 500px;
   padding: 10px;
   cursor: pointer;
+  background-color: rgb(245, 235, 245);
 }
 
 /* List*/
