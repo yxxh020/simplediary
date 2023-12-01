@@ -1,7 +1,7 @@
 import "./App.css";
 import DiaryEditor from "./DiaryEditior";
 import DiaryList from "./DiaryList";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Lifecycle from "./Lifecycle";
 
 // domain: https://jsonplaceholder.typicode.com/comments
@@ -41,7 +41,7 @@ function App() {
     const res = await fetch(
       "https://jsonplaceholder.typicode.com/comments"
     ).then((res) => res.json());
-    console.log(res);
+    // console.log(res);
 
     const initData = res.slice(0, 20).map((it) => {
       return {
@@ -77,7 +77,7 @@ function App() {
   const onRemove = (targetId) => {
     console.log(`${targetId}가 삭제되었습니다.`);
     const newDiaryList = data.filter((it) => it.id !== targetId);
-    console.log(newDiaryList);
+    // console.log(newDiaryList);
     setData(newDiaryList);
   };
 
@@ -90,10 +90,26 @@ function App() {
     );
   };
 
+  //기분 분석 함수
+  const getDiaryAnalysis = useMemo(() => {
+    console.log("일기 분석 시작");
+
+    const goodCount = data.filter((it) => it.emotion >= 3).length;
+    const badCount = data.length - goodCount;
+    const goodRatio = (goodCount / data.length) * 100;
+    return { goodCount, badCount, goodRatio };
+  }, [data.length]);
+
+  const { goodCount, badCount, goodRatio } = getDiaryAnalysis; //useMemo를 쓰면 함수가 아니라 값을 리턴해줌
+
   return (
     <div className="App">
       {/* <Lifecycle /> */}
       <DiaryEditor onCreate={onCreate} />
+      <div>전체 일기 : {data.length}</div>
+      <div>기분 좋은 일기 개수: {goodCount}</div>
+      <div>기분 나쁜 일기 개수 : {badCount}</div>
+      <div>기분 좋은 일기 비율 : {goodRatio}%</div>
       <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data} />
     </div>
   );
