@@ -1,7 +1,7 @@
 import "./App.css";
 import DiaryEditor from "./DiaryEditior";
 import DiaryList from "./DiaryList";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Lifecycle from "./Lifecycle";
 import OptimizeTest2 from "./OptimizeTest2";
 
@@ -61,7 +61,8 @@ function App() {
     getData();
   }, []);
 
-  const onCreate = (author, content, emotion) => {
+  const onCreate = useCallback((author, content, emotion) => {
+    //useCallback:첫번째 콜백인자가 데이터를 추가하고 두번째 [] 빈배열을 전달해서 마운트할때만 생성되고 재사용되도록
     const created_date = new Date().getTime();
     const newItem = {
       author,
@@ -71,8 +72,8 @@ function App() {
       id: dataId.current,
     };
     dataId.current += 1;
-    setData([newItem, ...data]);
-  };
+    setData((data) => [newItem, ...data]); // 인자로 데이터를 받아서 새 아이템을 추가한 데이터를 리턴하는 함수전달
+  }, []);
 
   //삭제
   const onRemove = (targetId) => {
