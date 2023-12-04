@@ -76,21 +76,21 @@ function App() {
   }, []);
 
   //삭제
-  const onRemove = (targetId) => {
+  const onRemove = useCallback((targetId) => {
     // console.log(`${targetId}가 삭제되었습니다.`);
-    const newDiaryList = data.filter((it) => it.id !== targetId);
+    // const newDiaryList = data.filter((it) => it.id !== targetId);
     // console.log(newDiaryList);
-    setData(newDiaryList);
-  };
+    setData((data) => data.filter((it) => it.id !== targetId));
+  }, []);
 
   //수정함수 diaryitem에 prop으로 전달
-  const onEdit = (targetId, newContent) => {
-    setData(
+  const onEdit = useCallback((targetId, newContent) => {
+    setData((data) =>
       data.map((it) =>
         it.id === targetId ? { ...it, content: newContent } : it
       )
     );
-  };
+  }, []);
 
   //기분 분석 함수
   const getDiaryAnalysis = useMemo(() => {
