@@ -1,7 +1,7 @@
 import "./App.css";
 import DiaryEditor from "./DiaryEditior";
 import DiaryList from "./DiaryList";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import Lifecycle from "./Lifecycle";
 import OptimizeTest2 from "./OptimizeTest2";
 
@@ -32,8 +32,37 @@ import OptimizeTest2 from "./OptimizeTest2";
 //   },
 // ];
 
+const reducer = (state, action) => {
+  //action 객체의 type을 통해서 상태변화 처리
+  switch (action.type) {
+    case "INIT": {
+      return action.data;
+    }
+    case "CREATE": {
+      const created_date = new Date().getTime();
+      const newItem = {
+        ...action.data,
+        created_date,
+      };
+      return [newItem, ...state];
+    }
+    case "REMOVE": {
+      return state.filter((it) => it.id !== action.targetId);
+    }
+    case "EDIT": {
+      return state.map((it) =>
+        it.id === action.targetId ? { ...it, content: action.newContent } : it
+      );
+    }
+    default:
+      return state;
+  }
+};
+
 function App() {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
+
+  const [data, dispatch] = useReducer(reducer, []);
 
   const dataId = useRef(0);
 
@@ -54,7 +83,8 @@ function App() {
       };
     });
 
-    setData(initData);
+    dispatch({ type: "INIT", data: initData });
+    // setData(initData);
   };
 
   useEffect(() => {
@@ -63,33 +93,23 @@ function App() {
 
   const onCreate = useCallback((author, content, emotion) => {
     //useCallback:첫번째 콜백인자가 데이터를 추가하고 두번째 [] 빈배열을 전달해서 마운트할때만 생성되고 재사용되도록
-    const created_date = new Date().getTime();
-    const newItem = {
-      author,
-      content,
-      emotion,
-      created_date,
-      id: dataId.current,
-    };
+
+    dispatch({
+      type: "CREATE",
+      data: { author, content, emotion, id: dataId.current },
+    });
     dataId.current += 1;
-    setData((data) => [newItem, ...data]); // 인자로 데이터를 받아서 새 아이템을 추가한 데이터를 리턴하는 함수전달
+    // setData((data) => [newItem, ...data]); // 인자로 데이터를 받아서 새 아이템을 추가한 데이터를 리턴하는 함수전달
   }, []);
 
   //삭제
   const onRemove = useCallback((targetId) => {
-    // console.log(`${targetId}가 삭제되었습니다.`);
-    // const newDiaryList = data.filter((it) => it.id !== targetId);
-    // console.log(newDiaryList);
-    setData((data) => data.filter((it) => it.id !== targetId));
+    dispatch({ type: "REMOVE", targetId });
   }, []);
 
-  //수정함수 diaryitem에 prop으로 전달
+  //수정함수 diaryitem에 prop으로
   const onEdit = useCallback((targetId, newContent) => {
-    setData((data) =>
-      data.map((it) =>
-        it.id === targetId ? { ...it, content: newContent } : it
-      )
-    );
+    dispatch({ type: "EDIT", targetId, newContent });
   }, []);
 
   //기분 분석 함수
