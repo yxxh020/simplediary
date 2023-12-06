@@ -8,7 +8,7 @@ const CounterA = React.memo(({ count }) => {
 });
 
 const CounterB = ({ obj }) => {
-  //prop obj가 객체일때 얕은비교(값을 비교하는게 아니라 주소를 비교) 해서 값이 1로 같아도 리렌더됨.
+  //prop obj가 객체일때 얕은복사(값을 비교하는게 아니라 주소를 비교) 해서 값이 1로 같아도 리렌더됨.
   useEffect(() => {
     console.log(`CounterB Update - count: ${obj.count}`);
   });
@@ -18,9 +18,9 @@ const CounterB = ({ obj }) => {
 
 //React.memo의 비교함수
 const areEqual = (prevprops, nextProps) => {
-  //   //깊은비교로 값 비교
+  //   //깊은복사로 값 비교
   //   if (prevprops.obj.count === nextProps.obj.count) {
-  //     return true; //이전 props와 현재 props값이 같다 -> 리렌더링 안함
+  //     return true; //이전 props와 현재 props값이 같다 -> 리렌더링 안함 
   //   }
   //   return false;
   return prevprops.obj.count === nextProps.obj.count;
@@ -31,7 +31,7 @@ const MemoizedCounterB = React.memo(CounterB, areEqual);
 const OptimizeTest2 = () => {
   const [count, setCount] = useState(1);
   const [obj, setObj] = useState({ count: 1 });
- 
+
   return (
     <div style={{ padding: 50 }}>
       <div>

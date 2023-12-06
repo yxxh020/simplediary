@@ -119,7 +119,7 @@ function App() {
           {/* <Lifecycle /> */}
           {/* <OptimizeTest2 /> */}
           <DiaryEditor />
-          <div>전체 일기 : {data.length}</div>
+          <div>전체 일기 : {data.length}</div> 
           <div>기분 좋은 일기 개수: {goodCount}</div>
           <div>기분 나쁜 일기 개수 : {badCount}</div>
           <div>기분 좋은 일기 비율 : {goodRatio}%</div>
